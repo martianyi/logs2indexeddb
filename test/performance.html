@@ -1,0 +1,15 @@
+<html>
+<head>
+    <script language="javascript" src="../logs2indexeddb.js"></script>
+</head>
+<body>
+<h1>IndexedDB performance test</h1>
+<p><i>This test records a log of data in IndexedDB and counts how much time one write request takes in a mean.</i></p>
+<p id="status" style="color: blue;">Initialization...</p>
+<script language="javascript">
+  window.onload = function () {
+    l2i.debug.startIndexedDBTest(5000, 'status')
+  }
+</script>
+</body>
+</html>

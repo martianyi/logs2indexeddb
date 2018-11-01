@@ -1,0 +1,42 @@
+<html>
+<head>
+    <script language="javascript" src="../logs2indexeddb.js"></script>
+</head>
+<body>
+<h1>Logs2indexeddb test</h1>
+<p>This test turns on l2i (logs2indexeddb) utility and write a few messages like<br>
+    <code>one<br>
+        two<br>
+        three</code><br> using <code>console.log()</code> method. <br>
+    You can check that there are messages in common console window and also in IndexedDB database named <code>logs2indexeddb</code>
+    (open Resources tab in Javascript Console window and check that in IndexedDB -> logs2indexeddb -> logs->).</p>
+
+<br>
+<br>
+<button id="download">Download file with logs from database</button>
+<button id="clear">Clear logs in database</button>
+<script language="javascript">
+  // Extended example from https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
+  window.onload = function () {
+    // Init and start saving console logs into IndexedDB
+    l2i.on().then(() => {
+      console.log('one one')
+      console.info('two')
+      console.warn('three')
+      console.error('four')
+    })
+
+
+    // Download a file with logs saved in IndexedDB
+    document.getElementById('download').addEventListener('click', function () {
+      l2i.download()
+    })
+
+    // Clear the database
+    document.getElementById('download').addEventListener('click', function () {
+      l2i.clear()
+    })
+  }
+</script>
+</body>
+</html>

@@ -5,29 +5,31 @@ Utility that saves all javascript console logs into the IndexedDB database conti
 You can access console.* logs after the browser tab was closed.
 This utility is a good choise for developers that need to analyze web client logs after a time.
 
-==============
+## Install
 
-Example:
+`npm install logs2indexddb`
 
-    l2i.init(function() {// successfully initialized
-        l2i.on(function() {
-            console.log('one');
-            console.log('two');
-            console.log('three');
-            console.log('444');
-        });
+## Example:
+
+```javascript
+l2i.on()
+    .then(() => {
+      console.log('one one')
+      console.info('two')
+      console.warn('three')
+      console.error('four')
     });
-    ...
-    console.log('5');
-    console.log('6');
-    ...
+    
+// ...
+console.log('5');
+console.log('6');
+```
 
-How to check that it works:
+## How to check that it works:
 
-Open console2db_test.html and look through the code and comments on the page. Also look into Javascript Console for errors (if occur).
+Open test/console2db.html and look through the code and comments on the page. Also look into Javascript Console for errors (if occur).
 
-==============
-Check logs after a while:
+## Check logs after a while:
 
 To download a file with all logs from the database:
 
@@ -43,15 +45,6 @@ To download logs for the given period use:
 
 You can invoke it right from Javascript Console or attach to a button click event handler.
 
-
-==============
 To clear old logs in the database:
 
     l2i.clear();
-
-==============
-Uncatchable exceptions
-
-l2i catches all uncatchable exceptions then on. However, you can turn this off if you needs only clear logs (produced using console.* methods):
-
-    l2i.exceptions.uncatchable.off();
