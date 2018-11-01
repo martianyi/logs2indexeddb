@@ -3,15 +3,16 @@ logs2indexeddb
 
 Utility that saves all javascript console logs into the IndexedDB database continuously.
 You can access console.* logs after the browser tab was closed.
-This utility is a good choise for developers that need to analyze web client logs after a time.
+This utility is a good choice for developers that need to analyze web client logs after a time.
 
 ## Install
 
 `npm install logs2indexddb`
 
-## Example:
+## Example
 
 ```javascript
+l2i.setMaxRows(1000); // set max rows
 l2i.on()
     .then(() => {
       console.log('one one')
@@ -21,15 +22,15 @@ l2i.on()
     });
     
 // ...
-console.log('5');
-console.log('6');
+console.log('5')
+console.log('6')
 ```
 
-## How to check that it works:
+## How to check that it works
 
 Open test/console2db.html and look through the code and comments on the page. Also look into Javascript Console for errors (if occur).
 
-## Check logs after a while:
+## Check logs after a while
 
 To download a file with all logs from the database:
 

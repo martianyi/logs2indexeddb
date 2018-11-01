@@ -1,7 +1,7 @@
 {
   "name": "logs2indexeddb",
-  "version": "0.1.0",
-  "description": "console logs 2 indexedDB",
+  "version": "0.1.1",
+  "description": "console logs to indexedDB",
   "main": "logs2indexeddb.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/martianyi/logs2indexeddb.git"
   },
-  "keywords": [],
+  "keywords": [
+    "console",
+    "indexedDB"
+  ],
   "author": "seriyvolk83, martianyi",
   "license": "MIT",
   "bugs": {

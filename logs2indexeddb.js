@@ -30,6 +30,7 @@
     databaseName: 'logs2indexeddb',
     databaseVersion: 4,
     database: null,
+    maxRows: 500,
     consoles: {
       originalIsOn: false,
       /**
@@ -40,62 +41,83 @@
        * @private Logger that saves data into opened IndexedDB.
        */
       indexeddb: {
-        log: function (str) {
-          _l2i.consoles.indexeddb.write2db('log', str)
+        log: function () {
+          _l2i.consoles.indexeddb.write2db('log', arguments)
         },
-        warn: function (str) {
-          _l2i.consoles.indexeddb.write2db('warn', str)
+        warn: function () {
+          _l2i.consoles.indexeddb.write2db('warn', arguments)
         },
-        trace: function (str) {
-          _l2i.consoles.indexeddb.write2db('trace', str)
+        trace: function () {
+          _l2i.consoles.indexeddb.write2db('trace', arguments)
         },
-        error: function (str) {
-          _l2i.consoles.indexeddb.write2db('error', str)
+        error: function () {
+          _l2i.consoles.indexeddb.write2db('error', arguments)
         },
-        info: function (str) {
-          _l2i.consoles.indexeddb.write2db('info', str)
+        info: function () {
+          _l2i.consoles.indexeddb.write2db('info', arguments)
         },
-        debug: function (str) {
-          _l2i.consoles.indexeddb.write2db('debug', str)
+        debug: function () {
+          _l2i.consoles.indexeddb.write2db('debug', arguments)
         },
-        write2db: function (label, str) {
+        write2db: function (label, args) {
+          if (args.length === 0) return
+          var i = 0
+          var strings = []
+          for (var al = args.length; i < al; i++) {
+            strings.push(args[i])
+          }
+          var log = strings.join(' ')
+
           var time = new Date()
           time.setMonth(time.getMonth() - 1)
           var data = {
             time: time.getTime() + '',
             label: label,
-            log: str
+            log: log
           }
-          _l2i.database.transaction(['logs'], 'readwrite').objectStore('logs').add(data)
+          var transaction = _l2i.database.transaction(['logs'], 'readwrite')
+          var objectStore = transaction.objectStore('logs')
+          objectStore.add(data)
+          var countRequest = objectStore.count()
+          countRequest.onsuccess = function () {
+            if (countRequest.result > _l2i.maxRows) {
+              objectStore.openCursor().onsuccess = function (event) {
+                var cursor = event.target.result
+                if (cursor) {
+                  var delRequest = cursor.delete()
+                }
+              }
+            }
+          }
         }
       },
       /**
        * @private Logs into both - console and indexeddb
        */
       both: {
-        log: function (str) {
-          _l2i.consoles.original.log(str)
-          _l2i.consoles.indexeddb.log(str)
+        log: function () {
+          _l2i.consoles.original.log.apply(this, arguments)
+          _l2i.consoles.indexeddb.log.apply(this, arguments)
         },
-        warn: function (str) {
-          _l2i.consoles.original.warn(str)
-          _l2i.consoles.indexeddb.warn(str)
+        warn: function () {
+          _l2i.consoles.original.warn.apply(this, arguments)
+          _l2i.consoles.indexeddb.warn.apply(this, arguments)
         },
-        trace: function (str) {
-          _l2i.consoles.original.trace(str)
-          _l2i.consoles.indexeddb.trace(str)
+        trace: function () {
+          _l2i.consoles.original.trace.apply(this, arguments)
+          _l2i.consoles.indexeddb.trace.apply(this, arguments)
         },
-        error: function (str) {
-          _l2i.consoles.original.error(str)
-          _l2i.consoles.indexeddb.error(str)
+        error: function () {
+          _l2i.consoles.original.error.apply(this, arguments)
+          _l2i.consoles.indexeddb.error.apply(this, arguments)
         },
-        info: function (str) {
-          _l2i.consoles.original.info(str)
-          _l2i.consoles.indexeddb.info(str)
+        info: function () {
+          _l2i.consoles.original.info.apply(this, arguments)
+          _l2i.consoles.indexeddb.info.apply(this, arguments)
         },
-        debug: function (str) {
-          _l2i.consoles.original.debug(str)
-          _l2i.consoles.indexeddb.debug(str)
+        debug: function () {
+          _l2i.consoles.original.debug.apply(this, arguments)
+          _l2i.consoles.indexeddb.debug.apply(this, arguments)
         }
       },
     },
@@ -140,12 +162,12 @@
      * @param dbName
      */
     dropDb (dbName) {
-      var request = indexedDB.deleteDatabase(dbName);
-      request.onsuccess = function(event) {
-        _l2i.consoles.original.log("logs2indexeddb successfully cleared and dropped");
-      };
+      var request = indexedDB.deleteDatabase(dbName)
+      request.onsuccess = function (event) {
+        _l2i.consoles.original.log('logs2indexeddb successfully cleared and dropped')
+      }
       request.onerror = function () {
-        _l2i.consoles.original.log("logs2indexeddb error when drop database");
+        _l2i.consoles.original.log('logs2indexeddb error when drop database')
       }
     },
     /**
@@ -162,7 +184,7 @@
         _l2i.consoles.original.log('l2i.download: Empty database')
         return
       }
-      var filename = 'console.log'
+      var filename = location.host + '_' + Date.now() + '.txt'
 
       var blob = new Blob([data], {type: 'text/plain'}),
         e = document.createEvent('MouseEvents'),
@@ -338,6 +360,9 @@
      */
     isOn: function () {
       return _l2i.consoles.originalIsOn
+    },
+    setMaxRows: function (rows) {
+      _l2i.maxRows = rows
     },
     /**
      * clear logs in indexedDB
